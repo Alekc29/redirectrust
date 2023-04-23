@@ -1,0 +1,1 @@
+# Trust Redirect Generator (TRG)
