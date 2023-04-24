@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}  
+  {{title}}
+{% endblock %}
+	 
+{% block content %}
+
+  
+  <article style="text-align: center;">
+    <label for="activation_key">Код активации:</label><br>
+    <input type="text" id="activation_key" name="activation_key" placeholder="Введите код активации" required><br><br>
+    
+    <label for="URL_redirects">URL редиректа:</label><br>
+    <input type="text" id="URL_redirects" name="URL_redirects" placeholder="http://site.com" required><br><br>
+
+    <label for="URL_count">Кол-во редиректов (шаг 1000 шт):</label><br>
+    <input type="number" id="URL_count" name="URL_count" min="1" max="1000" placeholder="Введите число" required><br><br>
+
+    <a href="" class="btn btn-primary">Сгенерировать</a>
+  </article>  
+
+{% endblock content%}
+

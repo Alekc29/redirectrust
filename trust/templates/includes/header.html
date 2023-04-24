@@ -1,0 +1,26 @@
+{% load static %}
+
+<nav class="navbar navbar-light" style="background-color: lightskyblue">
+  <div class="container">    
+    <a class="navbar-brand" href="{% url 'redirects:index' %}">
+      <img src="{% static 'img/logo.png' %}" width="50" height="30" class="d-inline-block align-top" alt="">
+      <span style="color:red">Trust</span><span style="color:blue">Redirect</span>Generator
+    </a>     
+    <ul class="nav nav-pills">
+      {% with request.resolver_match.view_name as view_name %}
+      <li class="nav-item">              
+        <a class="nav-link {% if view_name  == 'redirects:index' %}active{% endif %}" 
+           href="{% url 'redirects:index' %}"
+        >RU
+        </a>
+      </li>      
+      <li class="nav-item">
+        <a class="nav-link {% if view_name == 'redirects:index_en' %}active{% endif %}" 
+          href="{% url 'redirects:index_en' %}"
+          >EN
+        </a>
+      </li>   
+      {% endwith %} 
+    </ul> 
+  </div>
+</nav>      
