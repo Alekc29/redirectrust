@@ -55,7 +55,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'trust.urls'
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'redirects:index'
+LOGIN_REDIRECT_URL = 'redirects:office'
 
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
@@ -128,3 +128,5 @@ USE_TZ = True
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 STATIC_URL = '/static/'
+
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'

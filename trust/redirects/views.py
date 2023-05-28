@@ -1,6 +1,7 @@
 import requests
 import os
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from dotenv import load_dotenv
 
@@ -16,29 +17,7 @@ def index(request):
     ''' Главная страница. '''
     template = 'redirects/index.html'
     title = 'Последние обновления на сайте'
-    body = ('<html>' +
-            '<head>' +
-                '<title></title>' +
-            '</head>' +
-            '<body>Дмитрий, здравствуйте!<br />' +
-            '<br />' +
-            'Подготовили для вас информацию, просим ознакомиться:<br />' +
-            '<a href="https://ip2geolocation.com/?ip=rambler.ru">список 1</a><br />' +
-            '</body>' +
-            '</html>')
-    url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
-                f'api_key={API_KEY_UNISOFT}&' +
-                f'email=Misterio <{SEND_EMAIL}>&' +
-                f'sender_name=UNISOFT&' +
-                f'sender_email={SEND_EMAIL}&' +
-                f'subject=TRY_RED&' +
-                f'body={body}&' +
-                f'list_id=1&' +
-                f'lang=en&' +
-                f'track_read=0&' +
-                f'track_links=1&' +
-                f'error_checking=1&')
-    response = ""#requests.get(url_send).json()
+    response = 'Контента нетю.'
     context = {
         'title': title,
         'page_obj': response,
@@ -58,15 +37,62 @@ def index_en(request):
     return render(request, template, context)
 
 
+@login_required
 def user_get_link(request):
-    if request.method == 'POST':
-        form = LinkForm(request.POST)
-        if form.is_valid():
-            code = form.cleaned_data['activation_key']
-            link = form.cleaned_data['URL_redirects']
-            count_link = form.cleaned_data['URL_count']
-            form.save()
-            return redirect('/thank-you/')
-        return render(request, 'index.html', {'form': form})
-    form = LinkForm()
-    return render(request, 'index.html', {'form': form}) 
+    ''' Личный кабинет пользователя.
+        Заполняет поля кода, ссылки и число. '''
+    template = 'redirects/office.html'
+    form = LinkForm(
+        request.POST or None,
+        files=request.FILES or None
+    )
+    if form.is_valid():
+        code = form.cleaned_data['code']
+        link = form.cleaned_data['link']
+        count_link = form.cleaned_data['count_link']
+        #form.save()
+        if code != f'code_{request.user}':
+            return redirect('redirects:office')
+        body_header = (
+            '<html>' +
+            '<head>' +
+            '<title></title>' +
+            '</head>' +
+            f'<body>{request.user}, здравствуйте!<br />' +
+            '<br />' +
+            'Подготовили для вас информацию, просим ознакомиться:<br />'
+        )
+        body_footer = ''
+        for i in range(1, count_link+1):
+            body_footer += f'<a href="{link}">список {i}</a><br />'
+        body_footer += ('</body>' +
+                        '</html>')
+        body = body_header + body_footer
+        url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
+                    f'api_key={API_KEY_UNISOFT}&' +
+                    f'email=Misterio <{SEND_EMAIL}>&' +
+                    f'sender_name=UNISOFT&' +
+                    f'sender_email={SEND_EMAIL}&' +
+                    f'subject=TRY_RED&' +
+                    f'body={body}&' +
+                    f'list_id=1&' +
+                    f'lang=en&' +
+                    f'track_read=0&' +
+                    f'track_links=1&' +
+                    f'error_checking=1&')
+        #requests.get(url_send)
+        return redirect('redirects:result')
+    return render(request, template, {'form': form})
+
+
+def user_get_result(request):
+    ''' Личный кабинет пользователя.
+        Для получения редиректов. '''
+    template = 'redirects/office_result.html'
+    title = 'Личный кабинет.'
+    response = 'Контента нетю.'
+    context = {
+        'title': title,
+        'page_obj': response,
+    }
+    return render(request, template, context)

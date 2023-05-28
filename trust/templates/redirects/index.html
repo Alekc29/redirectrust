@@ -12,30 +12,36 @@
     </article>  
 
     <article class="col-6" style="font-size: 22px;">
-      <label for="activation_key">Код активации:</label><br>
-      <input type="text" name="activation_key" style="width: 100%;" placeholder="Введите код активации" required><br><br>
+
+      {% if user.is_authenticated %}      
+      <li class="nav-item">
+        <a class="nav-link"
+        >Пользователь: {{ user.username }}</a>
+      </li>
+      <li class="nav-item"> 
+        <a class="nav-link" 
+        href="{% url 'redirects:office' %}"
+        >Войти в личный кабинет</a>
+      </li>
+      <li class="nav-item"> 
+        <a class="nav-link" href="{% url 'users:logout' %}">Выйти</a>
+      </li>
       
-      <label for="URL_redirects">URL редиректа:</label><br>
-      <input type="text" name="URL_redirects" style="width: 100%;" placeholder="http://site.com" required><br><br>
-
-      <div style="border: 1px solid black; padding: 10px; font-size: 16px;">
-        Если указать список ссылок с новой строки, то кол-во редиректов будет равное этому списку. <br>
-        {RANDNUM-n}     - случайные символы из чисел,          где "n" - кол-во символов <br>
-        {RANDWORDS-n}   - случайные символы из букв <br>          
-        {RANDALL-n}     - случайные символы из чисел и букв <br>  
-        Пример 1: http://site.com/#{RANDNUM-10} <br>
-        Пример 2: http://{RANDWORDS-10}.site.com/ <br>
-      </div>
-      <br>
-
-      <div style="border: 1px solid black; padding: 10px; font-size: 16px;">
-        {{  page_obj  }}
-      </div>
-
-      <label for="URL_count">Кол-во редиректов (шаг 1000 шт):</label><br>
-      <input type="number" name="URL_count" min="1" max="1000" style="width: 100%;" placeholder="Введите число" required><br><br>
-
-      <a href="" class="btn btn-primary" style="text-align: center; font-size: 22px;">Сгенерировать</a>
+      {% else %}
+      <label>Приветствуем Вас в нашем сервисе!</label><br>
+      <label>Для дальнейшей работы авторизуйтесь или пройдите регистрацию.</label><br>
+        <li class="nav-item"> 
+          <a class="nav-link" 
+            href="{% url 'users:login' %}">Войти
+          </a>
+        </li>
+        <li class="nav-item"> 
+          <a class="nav-link" 
+            href="{% url 'users:signup' %}">Регистрация
+          </a>
+        </li>        
+      {% endif %}
+      
     </article> 
     
   </div>
