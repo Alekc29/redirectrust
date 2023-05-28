@@ -1,8 +1,10 @@
 import requests
 import os
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from dotenv import load_dotenv
+
+from .forms import LinkForm
 
 load_dotenv()
 
@@ -24,7 +26,7 @@ def index(request):
             '<a href="https://ip2geolocation.com/?ip=rambler.ru">список 1</a><br />' +
             '</body>' +
             '</html>')
-    url_test = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
+    url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
                 f'api_key={API_KEY_UNISOFT}&' +
                 f'email=Misterio <{SEND_EMAIL}>&' +
                 f'sender_name=UNISOFT&' +
@@ -36,8 +38,7 @@ def index(request):
                 f'track_read=0&' +
                 f'track_links=1&' +
                 f'error_checking=1&')
-    response = requests.get(url_test).json()
-    page_obj = 'Пусто однако'
+    response = ""#requests.get(url_send).json()
     context = {
         'title': title,
         'page_obj': response,
@@ -55,3 +56,17 @@ def index_en(request):
         'page_obj': page_obj,
     }
     return render(request, template, context)
+
+
+def user_get_link(request):
+    if request.method == 'POST':
+        form = LinkForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['activation_key']
+            link = form.cleaned_data['URL_redirects']
+            count_link = form.cleaned_data['URL_count']
+            form.save()
+            return redirect('/thank-you/')
+        return render(request, 'index.html', {'form': form})
+    form = LinkForm()
+    return render(request, 'index.html', {'form': form}) 

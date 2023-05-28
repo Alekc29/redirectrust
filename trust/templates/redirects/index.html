@@ -13,10 +13,10 @@
 
     <article class="col-6" style="font-size: 22px;">
       <label for="activation_key">Код активации:</label><br>
-      <input type="text" id="activation_key" name="activation_key" style="width: 100%;" placeholder="Введите код активации" required><br><br>
+      <input type="text" name="activation_key" style="width: 100%;" placeholder="Введите код активации" required><br><br>
       
       <label for="URL_redirects">URL редиректа:</label><br>
-      <input type="text" id="URL_redirects" name="URL_redirects" style="width: 100%;" placeholder="http://site.com" required><br><br>
+      <input type="text" name="URL_redirects" style="width: 100%;" placeholder="http://site.com" required><br><br>
 
       <div style="border: 1px solid black; padding: 10px; font-size: 16px;">
         Если указать список ссылок с новой строки, то кол-во редиректов будет равное этому списку. <br>
@@ -33,7 +33,7 @@
       </div>
 
       <label for="URL_count">Кол-во редиректов (шаг 1000 шт):</label><br>
-      <input type="number" id="URL_count" name="URL_count" min="1" max="1000" style="width: 100%;" placeholder="Введите число" required><br><br>
+      <input type="number" name="URL_count" min="1" max="1000" style="width: 100%;" placeholder="Введите число" required><br><br>
 
       <a href="" class="btn btn-primary" style="text-align: center; font-size: 22px;">Сгенерировать</a>
     </article> 
