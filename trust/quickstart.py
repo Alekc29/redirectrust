@@ -92,7 +92,7 @@ def delete_messages(service):
 
 def main():
     msg_ids = search_messages(get_service())
-    get_link_message(get_service(), 'me', msg_ids[5])
+    return get_link_message(get_service(), 'me', msg_ids[0])
 
 
 if __name__ == '__main__':

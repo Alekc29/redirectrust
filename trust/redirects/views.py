@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from dotenv import load_dotenv
 
 from .forms import LinkForm
+from quickstart import main
 
 load_dotenv()
 
@@ -52,7 +53,7 @@ def user_get_link(request):
         count_link = form.cleaned_data['count_link']
         #form.save()
         if code != f'code_{request.user}':
-            return redirect('redirects:office')
+            return render(request, template, {'form': form})
         body_header = (
             '<html>' +
             '<head>' +
@@ -80,7 +81,7 @@ def user_get_link(request):
                     f'track_read=0&' +
                     f'track_links=1&' +
                     f'error_checking=1&')
-        #requests.get(url_send)
+        requests.get(url_send)
         return redirect('redirects:result')
     return render(request, template, {'form': form})
 
@@ -90,7 +91,10 @@ def user_get_result(request):
         Для получения редиректов. '''
     template = 'redirects/office_result.html'
     title = 'Личный кабинет.'
-    response = 'Контента нетю.'
+    links = main()
+    response = ''
+    for link in links:
+        response += link
     context = {
         'title': title,
         'page_obj': response,

@@ -7,15 +7,13 @@
 {% block content %}
 
   <div class="row">
-    <article class="col-3">
+    
 
-    </article>  
-
-    <article class="col-6" style="font-size: 22px;">
+    <article class="col-3" style="font-size: 22px;">
       <label style="color:blue">Личный кабинет: {{ user.username }}</label><br>
-      <div class="card-body">        
+      <div>        
 
-        <label id="myInput">{{ page_obj }}</label>
+        <textarea id="myInput" disabled cols="60" rows="5">{{ page_obj }}</textarea>
         <button onclick="myFunction()">Copy links</button>
 
         <script>
@@ -28,7 +26,11 @@
         </script>
 
       </div>
-
+      <li class="nav-item"> 
+        <a class="nav-link" 
+        href="{% url 'redirects:office' %}"
+        >Вернуться в окно запроса ссылок.</a>
+      </li>
     </article> 
     
   </div>
