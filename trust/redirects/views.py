@@ -93,8 +93,10 @@ def user_get_result(request):
     title = 'Личный кабинет.'
     links = main()
     response = ''
+    inc = 1
     for link in links:
-        response += link
+        response += f'{inc}: {link} \n'
+        inc += 1
     context = {
         'title': title,
         'page_obj': response,

@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import base64
 import os.path
+import time
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -10,7 +11,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
+RETRY_TIME = 20
 
 
 def get_service():
@@ -41,17 +43,28 @@ def get_service():
 
 
 def search_messages(service, user_id='me'):
+    ''' Поиск непрочитанных сообщений '''
+    time.sleep(RETRY_TIME)
     try:
-        search_id = service.users().messages().list(userId=user_id).execute()
+        search_id = service.users().messages().list(userId=user_id, q='label:unread').execute()
         number_results = search_id['resultSizeEstimate']
         final_list = []
         if number_results > 0:
             message_ids = search_id['messages']
             for ids in message_ids:
                 final_list.append(ids['id'])
+                service.users().messages().batchModify(
+                    userId=user_id,
+                    body={
+                        'ids': ids['id'],
+                        'removeLabelIds': ['UNREAD']
+                    }
+                ).execute()
             return final_list
         else:
             print('Письма не найдены.')
+            return False
+            
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
         print(f'An error occurred: {error}')
@@ -90,8 +103,10 @@ def delete_messages(service):
     ).execute()
 
 
-def main():
+def main():    
     msg_ids = search_messages(get_service())
+    while msg_ids==False:
+        msg_ids = search_messages(get_service())
     return get_link_message(get_service(), 'me', msg_ids[0])
 
 
