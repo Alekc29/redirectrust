@@ -16,6 +16,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def get_list_allowed(allowed: str) -> list:
+    return [host.strip() for host in allowed.split(',') if host.strip()]
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,7 +31,9 @@ SECRET_KEY = os.getenv('KEY_DJANGO')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [get_list_allowed(
+    os.getenv('ALLOWED_HOSTS', default='localhost')
+)]
 
 
 # Application definition
