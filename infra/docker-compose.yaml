@@ -10,7 +10,7 @@ services:
       - .env
 
   web:
-    build: .
+    image: alekc029/trust:latest
     restart: always
     volumes:
       - static_value:/app/static/
