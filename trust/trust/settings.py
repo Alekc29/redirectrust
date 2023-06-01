@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv('KEY_DJANGO')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['185.241.54.222', 'localhost', 'trustservice.zapto.org']
+ALLOWED_HOSTS = ['185.241.54.222', 'trustservice.zapto.org']
 
 
 # Application definition
