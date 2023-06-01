@@ -140,4 +140,6 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
