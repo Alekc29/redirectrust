@@ -8,19 +8,7 @@
     </a>     
     <ul class="nav nav-pills">
       {% with request.resolver_match.view_name as view_name %}
-      <li class="nav-item">              
-        <a class="nav-link {% if view_name  == 'redirects:index' %}active{% endif %}" 
-           href="{% url 'redirects:index' %}"
-        >RU
-        </a>
-      </li>      
-      <li class="nav-item">
-        <a class="nav-link {% if view_name == 'redirects:index_en' %}active{% endif %}" 
-          href="{% url 'redirects:index_en' %}"
-          >EN
-        </a>
-      </li>
-
+      
       <!-- Проверка: авторизован ли пользователь? --> 
 
       {% if user.is_authenticated %}      
