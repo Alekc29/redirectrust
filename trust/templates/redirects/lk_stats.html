@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}  
+  {{title}}
+{% endblock %}
+	 
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-8 p-5">
+    <div class="card">
+  
+      <div class="card-header">Личный кабинет</div>
+      <div class="card-body">
+        <h5 class="card-title">Статус аккаунта: <span style="color:#00fc0d">{{ status }}</span></h5>
+        <p class="card-text">{{ date_active }}</p>
+        <p class="card-text">Баланс: {{ page_obj.balance }}</p>
+        <button type="submit" class="btn btn-primary">
+          Пополнить счёт
+        </button> 
+        <p class="card-text">Выполнено запросов к unisender: {{ page_obj.count_unisender }}</p>
+        <a href="{% url 'redirects:unisender' %}"
+          >Новый запрос к unisender</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content%}
+
