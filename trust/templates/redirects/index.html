@@ -13,35 +13,10 @@
 
     <article class="col-6" style="font-size: 22px;">
 
-      {% if user.is_authenticated %}      
-      <li class="nav-item">
-        <a class="nav-link"
-        >Пользователь: {{ user.username }}</a>
-      </li>
-      <li class="nav-item"> 
-        <a class="nav-link" 
-        href="{% url 'redirects:stats' %}"
-        >Войти в личный кабинет</a>
-      </li>
-      <li class="nav-item"> 
-        <a class="nav-link" href="{% url 'users:logout' %}">Выйти</a>
-      </li>
-      
-      {% else %}
       <label>Приветствуем Вас в нашем сервисе!</label><br>
       <label>Для дальнейшей работы авторизуйтесь или пройдите регистрацию.</label><br>
-        <li class="nav-item"> 
-          <a class="nav-link" 
-            href="{% url 'users:login' %}">Войти
-          </a>
-        </li>
-        <li class="nav-item"> 
-          <a class="nav-link" 
-            href="{% url 'users:signup' %}">Регистрация
-          </a>
-        </li>        
-      {% endif %}
-      
+      <label>Здесь будет описание функционала сервиса.</label><br>     
+           
     </article> 
     
   </div>

@@ -46,17 +46,19 @@ def user_get_link(request):
     ''' Личный кабинет пользователя.
         Заполняет поля кода, ссылки и число. '''
     template = 'redirects/unisender.html'
+    stats = Stat.objects.get(donater=request.user)
     form = LinkForm(
         request.POST or None,
         files=request.FILES or None
     )
     if form.is_valid():
-        code = form.cleaned_data['code']
+        #code = form.cleaned_data['code']
         link = form.cleaned_data['link']
         count_link = form.cleaned_data['count_link']
         #form.save()
-        if code != f'code_{request.user}':
-            return render(request, template, {'form': form})
+        if stats.balance <= 0:
+            return render(request, template, {'form': form,
+                                              'balance': stats.balance})
         body_header = (
             '<html>' +
             '<head>' +
@@ -85,8 +87,12 @@ def user_get_link(request):
                     f'track_links=1&' +
                     f'error_checking=1&')
         requests.get(url_send)
+        stats.count_unisender += 1
+        stats.save()
         return redirect('redirects:uni_result')
-    return render(request, template, {'form': form})
+    return render(request, template, {'form': form,
+                                      'balance': stats.balance})
+
 
 
 def user_get_result(request):
@@ -94,6 +100,7 @@ def user_get_result(request):
         Для получения редиректов. '''
     template = 'redirects/unisender_result.html'
     title = 'Личный кабинет.'
+    stats = Stat.objects.get(donater=request.user)
     links = main()
     response = ''
     inc = 1
@@ -122,8 +129,8 @@ def user_get_stats(request):
     if obj.balance > 0:
         status = 'Active'
         now = datetime.datetime.now()
-        check_date = obj.balance * 30 / 100 + now
-        date_active = f'Дейтсвует до {check_date}'
+        check_date = datetime.timedelta(days=(round(obj.balance * 30 / 100))) + now
+        date_active = f'Дейтсвует до {check_date.day}.{check_date.month}.{check_date.year}'
     else:
         status = 'InActive'
         date_active = 'Вы не можете использовать наш сервис.'

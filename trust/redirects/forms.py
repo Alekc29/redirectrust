@@ -3,7 +3,7 @@ from django import forms
 from .models import Connect
 
 class LinkForm(forms.Form):
-    code = forms.CharField(label='Код активации',)
+    #code = forms.CharField(label='Код активации',)
     link = forms.CharField(label='URL редиректа',)
     count_link = forms.IntegerField(
         label='Кол-во редиректов',
