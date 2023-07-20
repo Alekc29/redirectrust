@@ -62,7 +62,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'trust.urls'
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'redirects:office'
+LOGIN_REDIRECT_URL = 'redirects:stats'
 
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
