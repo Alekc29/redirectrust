@@ -9,12 +9,19 @@ from dotenv import load_dotenv
 
 from .forms import LinkForm, FeedbackForm
 from .models import Connect, Stat 
-from quickstart import main
+import quickstart
 
 load_dotenv()
 
 API_KEY_UNISOFT = os.getenv('API_KEY_UNISOFT')
-SEND_EMAIL = os.getenv('SENDER_EMAIL')
+SEND_EMAIL = {1: os.getenv('SENDER_EMAIL'),
+              2: os.getenv('SENDER_EMAIL_2'),
+              3: os.getenv('SENDER_EMAIL_3'),
+              4: os.getenv('SENDER_EMAIL_4'),
+              5: os.getenv('SENDER_EMAIL_5'),}
+
+INC = 1
+LIMIT_LINK = 110
 
 
 def index(request):
@@ -61,32 +68,53 @@ def user_get_link(request):
                                               'balance': stats.balance})
         body_header = (
             '<html>' +
-            '<head>' +
-            '<title></title>' +
-            '</head>' +
-            f'<body>{request.user}, здравствуйте!<br />' +
-            '<br />' +
-            'Подготовили для вас информацию, просим ознакомиться:<br />'
+            f'<body>{request.user}, здравствуйте!<br />'
         )
-        body_footer = ''
-        for i in range(1, count_link+1):
-            body_footer += f'<a href="{link}">список {i}</a><br />'
-        body_footer += ('</body>' +
-                        '</html>')
-        body = body_header + body_footer
-        url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
-                    f'api_key={API_KEY_UNISOFT}&' +
-                    f'email=Misterio <{SEND_EMAIL}>&' +
-                    f'sender_name=UNISOFT&' +
-                    f'sender_email={SEND_EMAIL}&' +
-                    f'subject=TRY_RED&' +
-                    f'body={body}&' +
-                    f'list_id=1&' +
-                    f'lang=en&' +
-                    f'track_read=0&' +
-                    f'track_links=1&' +
-                    f'error_checking=1&')
-        requests.get(url_send)
+        global INC
+        INC = 1
+        if count_link > LIMIT_LINK:
+            while count_link > LIMIT_LINK:
+                count_link -= LIMIT_LINK
+                body_footer = ''
+                for i in range(1, LIMIT_LINK+1):
+                    body_footer += f'<a href="{link}">список {i}</a><br />'
+                body_footer += ('</body>' +
+                                '</html>')
+                body = body_header + body_footer
+                url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
+                            f'api_key={API_KEY_UNISOFT}&' +
+                            f'email=Misterio <{SEND_EMAIL[INC]}>&' +
+                            f'sender_name=UNISOFT&' +
+                            f'sender_email={SEND_EMAIL[1]}&' +
+                            f'subject=TRY_RED&' +
+                            f'body={body}&' +
+                            f'list_id=1&' +
+                            f'lang=en&' +
+                            f'track_read=0&' +
+                            f'track_links=1&' +
+                            f'error_checking=1&')
+                requests.get(url_send)
+                INC += 1
+        if count_link <= LIMIT_LINK:
+            body_footer = ''
+            for i in range(1, count_link+1):
+                body_footer += f'<a href="{link}">список {i}</a><br />'
+            body_footer += ('</body>' +
+                            '</html>')
+            body = body_header + body_footer
+            url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
+                        f'api_key={API_KEY_UNISOFT}&' +
+                        f'email=Misterio <{SEND_EMAIL[INC]}>&' +
+                        f'sender_name=UNISOFT&' +
+                        f'sender_email={SEND_EMAIL[1]}&' +
+                        f'subject=TRY_RED&' +
+                        f'body={body}&' +
+                        f'list_id=1&' +
+                        f'lang=en&' +
+                        f'track_read=0&' +
+                        f'track_links=1&' +
+                        f'error_checking=1&')
+            requests.get(url_send)
         stats.count_unisender += 1
         stats.save()
         return redirect('redirects:uni_result')
@@ -100,13 +128,20 @@ def user_get_result(request):
         Для получения редиректов. '''
     template = 'redirects/unisender_result.html'
     title = 'Личный кабинет.'
-    stats = Stat.objects.get(donater=request.user)
-    links = main()
     response = ''
-    inc = 1
-    for link in links:
-        response += f'{inc}: {link} \n'
-        inc += 1
+    count = 1
+    for inc_main in range(1, INC+1):
+        links = quickstart.main(inc_main)
+    #links_2 = quickstart_2.main()
+        for link in links:
+            response += f'{count}: {link} \n'
+            count += 1
+    # for link_2 in links_2:
+    #     response += f'{inc}: {link_2} \n'
+    #     inc += 1
+    # file = open(f"resp{request.user}.txt", "w")
+    # file.write(response)
+    # file.close()
     context = {
         'title': title,
         'page_obj': response,

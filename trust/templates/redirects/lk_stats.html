@@ -12,7 +12,11 @@
   
       <div class="card-header">Личный кабинет</div>
       <div class="card-body">
-        <h5 class="card-title">Статус аккаунта: <span style="color:#00fc0d">{{ status }}</span></h5>
+        {% if status == 'InActive' %} 
+        <h5 class="card-title">Статус аккаунта: <span style="color:#fc0000">{{ status }}</span></h5>
+        {% else %}
+        <h5 class="card-title">Статус аккаунта: <span style="color:#43fc00">{{ status }}</span></h5>
+        {% endif %}
         <p class="card-text">{{ date_active }}</p>
         <p class="card-text">Баланс: {{ page_obj.balance }}</p>
         <button type="submit" class="btn btn-primary">

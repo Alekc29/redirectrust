@@ -12,26 +12,26 @@ from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
-RETRY_TIME = 20
+RETRY_TIME = 1
 
 
-def get_service():
+def get_service(inc):
     """
     Производит аутентификацию и предоставляет сервис для дальнейшей обработки.
     """
     creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if os.path.exists(f'token_{inc}.json'):
+        creds = Credentials.from_authorized_user_file(f'token_{inc}.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                f'credentials_{inc}.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open(f'token_{inc}.json', 'w') as token:
             token.write(creds.to_json())
     try:
         # Call the Gmail API
@@ -90,26 +90,14 @@ def get_link_message(service, user_id, msg_id):
         print('An error occurred: %s' % error)
 
 
-def delete_messages(service):
-    messages_to_delete = search_messages(service)
-    # it's possible to delete a single message with the delete API, like this:
-    # service.users().messages().delete(userId='me', id=msg['id'])
-    # but it's also possible to delete all the selected messages with one query, batchDelete
-    return service.users().messages().batchDelete(
-      userId='me',
-      body={
-          'ids': messages_to_delete[1]
-      }
-    ).execute()
-
-
-def main():    
-    msg_ids = search_messages(get_service())
+def main(inc):    
+    msg_ids = search_messages(get_service(inc))
     while msg_ids==False:
-        msg_ids = search_messages(get_service())
-    return get_link_message(get_service(), 'me', msg_ids[0])
+        msg_ids = search_messages(get_service(inc))
+    #print(get_link_message(get_service(), 'me', msg_ids[0]))
+    return get_link_message(get_service(inc), 'me', msg_ids[0])
 
 
 if __name__ == '__main__':
-    main()
+    main(5)
     
