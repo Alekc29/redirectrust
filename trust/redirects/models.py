@@ -18,6 +18,11 @@ class Stat(models.Model):
         blank=True,
         verbose_name='баланс'
     )
+    date_balance = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name='Дата проверки баланса'
+    )
     donat = models.FloatField(
         blank=True,
         verbose_name='Всего поступлений'

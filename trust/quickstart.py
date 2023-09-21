@@ -95,9 +95,14 @@ def main(inc):
     while msg_ids==False:
         msg_ids = search_messages(get_service(inc))
     #print(get_link_message(get_service(), 'me', msg_ids[0]))
+    result = []
+    if len(msg_ids) > 1:
+        for i in range(len(msg_ids)):
+            result += get_link_message(get_service(inc), 'me', msg_ids[0])
+        return result
     return get_link_message(get_service(inc), 'me', msg_ids[0])
 
 
 if __name__ == '__main__':
-    main(5)
+    main(7)
     

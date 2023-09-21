@@ -8,7 +8,7 @@ class LinkForm(forms.Form):
     count_link = forms.IntegerField(
         label='Кол-во редиректов',
         min_value=1,
-        max_value=10000,
+        max_value=700,
     )
 
 
@@ -16,3 +16,8 @@ class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Connect
         fields = ('feedback',)
+
+
+class CheckEmailForm(forms.Form):
+    emails = forms.CharField(label='Список emails',
+                             widget=forms.Textarea)

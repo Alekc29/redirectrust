@@ -18,7 +18,7 @@
         <h5 class="card-title">Статус аккаунта: <span style="color:#43fc00">{{ status }}</span></h5>
         {% endif %}
         <p class="card-text">{{ date_active }}</p>
-        <p class="card-text">Баланс: {{ page_obj.balance }}</p>
+        <p class="card-text">Баланс: {{ page_obj.balance|floatformat:2 }}</p>
         <button type="submit" class="btn btn-primary">
           Пополнить счёт
         </button> 

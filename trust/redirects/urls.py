@@ -12,4 +12,5 @@ urlpatterns = [
     path('stats/', views.user_get_stats, name='stats'),
     path('feedback/', views.create_feedback, name='feedback'),
     path('feedback/thank/', views.FeedbackThanks.as_view(), name='thanks'),
+    path('emails/', views.check_email, name='emails'),
 ]

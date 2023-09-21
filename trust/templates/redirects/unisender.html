@@ -12,7 +12,7 @@
     
         <div class="card-header">Личный кабинет: {{ user.username }}</div><br>
           <div class="card-body">
-            <h5 class="card-title">Ваш баланс: {{ balance }} usd</h5>
+            <h5 class="card-title">Ваш баланс: {{ balance|floatformat:2 }} usd</h5>
             <form method="POST" enctype="multipart/form-data" 
               action="{% url 'redirects:unisender' %}">
               {% csrf_token %}          
