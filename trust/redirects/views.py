@@ -26,7 +26,7 @@ SEND_EMAIL = {1: os.getenv('SENDER_EMAIL'),
               7: os.getenv('SENDER_EMAIL_7'),}
 
 INC = 1
-LIMIT_LINK = 110
+LIMIT_LINK = 100
 LIMIT_EMAIL = 7
 
 
