@@ -136,12 +136,10 @@ def user_get_result(request):
     template = 'redirects/unisender_result.html'
     title = 'Личный кабинет.'
     response = ''
-    count = 1
     for inc_main in range(1, INC+1):
         links = quickstart.main(inc_main)
         for link in links:
-            response += f'{count}: {link} \n'
-            count += 1
+            response += f'{link} \n'
     # file = open(f"resp{request.user}.txt", "w")
     # file.write(response)
     # file.close()
