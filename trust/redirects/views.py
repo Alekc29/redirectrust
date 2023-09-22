@@ -18,9 +18,9 @@ load_dotenv()
 API_KEY_UNISOFT = {1: os.getenv('API_KEY_UNISOFT'),
                    2: os.getenv('API_KEY_UNISOFT_2'),}
 SEND_EMAIL = {1: os.getenv('SENDER_EMAIL'),
-              2: os.getenv('SENDER_EMAIL_4'),
+              2: os.getenv('SENDER_EMAIL_2'),
               3: os.getenv('SENDER_EMAIL_3'),
-              4: os.getenv('SENDER_EMAIL_2'),
+              4: os.getenv('SENDER_EMAIL_4'),
               5: os.getenv('SENDER_EMAIL_5'),
               6: os.getenv('SENDER_EMAIL_6'),
               7: os.getenv('SENDER_EMAIL_7'),}
