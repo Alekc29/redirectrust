@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('KEY_DJANGO')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = []#get_list_allowed(os.getenv('ALLOWED_HOSTS'))
+ALLOWED_HOSTS = get_list_allowed(os.getenv('ALLOWED_HOSTS'))
 
 
 # Application definition
@@ -88,19 +88,19 @@ WSGI_APPLICATION = 'trust.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': os.getenv('DB_ENGINE'),
-    #     'NAME': os.getenv('DB_NAME'),
-    #     'USER': os.getenv('POSTGRES_USER'),
-    #     'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-    #     'HOST': os.getenv('DB_HOST'),
-    #     'PORT': os.getenv('DB_PORT')
-    # }
-    
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT')
     }
+    
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
 }
 
 
