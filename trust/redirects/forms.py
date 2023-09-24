@@ -8,7 +8,7 @@ class LinkForm(forms.Form):
     count_link = forms.IntegerField(
         label='Кол-во редиректов',
         min_value=1,
-        max_value=700,
+        max_value=2100,
     )
 
 

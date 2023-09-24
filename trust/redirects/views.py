@@ -16,7 +16,8 @@ import quickstart
 load_dotenv()
 
 API_KEY_UNISOFT = {1: os.getenv('API_KEY_UNISOFT'),
-                   2: os.getenv('API_KEY_UNISOFT_2'),}
+                   2: os.getenv('API_KEY_UNISOFT_2'),
+                   3: os.getenv('API_KEY_UNISOFT_3')}
 SEND_EMAIL = {1: os.getenv('SENDER_EMAIL'),
               2: os.getenv('SENDER_EMAIL_2'),
               3: os.getenv('SENDER_EMAIL_3'),
@@ -25,7 +26,8 @@ SEND_EMAIL = {1: os.getenv('SENDER_EMAIL'),
               6: os.getenv('SENDER_EMAIL_6'),
               7: os.getenv('SENDER_EMAIL_7'),}
 
-INC = 1
+INC_EMAIL = 1
+INC_API = 1
 LIMIT_LINK = 100
 LIMIT_EMAIL = 7
 
@@ -76,9 +78,10 @@ def user_get_link(request):
             '<html>' +
             f'<body>{request.user}, здравствуйте!<br />'
         )
-        global INC
-        INC = 1
-        inc_api = 1
+        global INC_EMAIL
+        global INC_API
+        INC_EMAIL = 1
+        INC_API = 1
         while count_link > LIMIT_LINK:
             count_link -= LIMIT_LINK
             body_footer = ''
@@ -88,10 +91,10 @@ def user_get_link(request):
                             '</html>')
             body = body_header + body_footer
             url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
-                        f'api_key={API_KEY_UNISOFT[inc_api]}&' +
-                        f'email=Misterio <{SEND_EMAIL[INC]}>&' +
+                        f'api_key={API_KEY_UNISOFT[INC_API]}&' +
+                        f'email=Misterio <{SEND_EMAIL[INC_EMAIL]}>&' +
                         f'sender_name=UNISOFT&' +
-                        f'sender_email={SEND_EMAIL[inc_api]}&' +
+                        f'sender_email={SEND_EMAIL[INC_API]}&' +
                         f'subject=TRY_RED&' +
                         f'body={body}&' +
                         f'list_id=1&' +
@@ -100,7 +103,10 @@ def user_get_link(request):
                         f'track_links=1&' +
                         f'error_checking=1&')
             requests.get(url_send)
-            INC += 1
+            INC_EMAIL += 1
+            if INC_EMAIL > 7:
+                INC_EMAIL = 1
+                INC_API += 1
             
         if count_link <= LIMIT_LINK:
             body_footer = ''
@@ -110,10 +116,10 @@ def user_get_link(request):
                             '</html>')
             body = body_header + body_footer
             url_send = (f'https://api.unisender.com/ru/api/sendEmail?format=json&' +
-                        f'api_key={API_KEY_UNISOFT[inc_api]}&' +
-                        f'email=Misterio <{SEND_EMAIL[INC]}>&' +
+                        f'api_key={API_KEY_UNISOFT[INC_API]}&' +
+                        f'email=Misterio <{SEND_EMAIL[INC_EMAIL]}>&' +
                         f'sender_name=UNISOFT&' +
-                        f'sender_email={SEND_EMAIL[inc_api]}&' +
+                        f'sender_email={SEND_EMAIL[INC_API]}&' +
                         f'subject=TRY_RED&' +
                         f'body={body}&' +
                         f'list_id=1&' +
@@ -136,13 +142,16 @@ def user_get_result(request):
     template = 'redirects/unisender_result.html'
     title = 'Личный кабинет.'
     response = ''
-    for inc_main in range(1, INC+1):
-        links = quickstart.main(inc_main)
-        for link in links:
-            response += f'{link} \n'
-    # file = open(f"resp{request.user}.txt", "w")
-    # file.write(response)
-    # file.close()
+    if INC_API > 1:
+        for inc_main in range(1, 8):
+            links = quickstart.main(inc_main)
+            for link in links:
+                response += f'{link} \n'
+    else:
+        for inc_main in range(1, INC_EMAIL+1):
+            links = quickstart.main(inc_main)
+            for link in links:
+                response += f'{link} \n'
     context = {
         'title': title,
         'page_obj': response,
