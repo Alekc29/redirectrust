@@ -37,13 +37,14 @@
               Доступные сервисы
             </a>
             <ul class="dropdown-menu dropdown-menu-dark">
-              <li><a class="dropdown-item" href="{% url 'redirects:unisender' %}">Unisender</a></li>
+              <li><a class="dropdown-item" href="{% url 'redirects:unisenders' %}">Unisender</a></li>
               <li><a class="dropdown-item" href="{% url 'redirects:emails' %}">CheckerEmails</a></li>
-              <li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
+              <li><a class="dropdown-item" href="{% url 'redirects:mailos' %}">MailoPost</a></li>
+              <li><a class="dropdown-item" href="{% url 'redirects:ghunts' %}">Ghunt</a></li>
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'redirects:feedback' %}">Оставить отзыв о сервисе</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'redirects:feedbacks' %}">Оставить отзыв о сервисе</a>
           </li>
           {% else %}
           <li class="nav-item">
@@ -59,7 +60,8 @@
             <ul class="dropdown-menu dropdown-menu-dark">
               <li><a class="dropdown-item" href="{% url 'users:login' %}">Unisender</a></li>
               <li><a class="dropdown-item" href="{% url 'users:login' %}">CheckerEmails</a></li>
-              <li><a class="dropdown-item" href="#">Что-то еще здесь</a></li>
+              <li><a class="dropdown-item" href="{% url 'users:login' %}">MailoPost</a></li>
+              <li><a class="dropdown-item" href="{% url 'users:login' %}">Ghunt</a></li>
             </ul>
           </li>
           <li class="nav-item">

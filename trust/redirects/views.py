@@ -1,4 +1,5 @@
 import datetime
+import json
 import requests
 import os
 
@@ -7,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from dotenv import load_dotenv
 
-from .imap4 import checker_email
+from .imap4 import checker_email, checker_ghunt
 from .forms import LinkForm, FeedbackForm, CheckEmailForm
 from .models import Connect, Stat 
 import quickstart
@@ -21,6 +22,7 @@ API_KEY_UNISOFT = {1: os.getenv('API_KEY_UNISOFT'),
                    4: os.getenv('API_KEY_UNISOFT_4'),
                    5: os.getenv('API_KEY_UNISOFT_5'),
                    6: os.getenv('API_KEY_UNISOFT_6'),}
+API_KEY_MAILO = {1: os.getenv('API_KEY_MAILOPOST'),}
 SEND_EMAIL = {1: os.getenv('SENDER_EMAIL'),
               2: os.getenv('SENDER_EMAIL_2'),
               3: os.getenv('SENDER_EMAIL_3'),
@@ -61,7 +63,7 @@ def index_en(request):
 
 @login_required
 def user_get_link(request):
-    ''' Личный кабинет пользователя.
+    ''' Личный кабинет unisender.
         Заполняет поля кода, ссылки и число. '''
     template = 'redirects/unisender.html'
     stats = Stat.objects.get(donater=request.user)
@@ -162,6 +164,73 @@ def user_get_result(request):
     return render(request, template, context)
 
 
+@login_required
+def user_get_link_mailo(request):
+    ''' Личный кабинет mailo.
+        Заполняет поля кода, ссылки и число. '''
+    template = 'redirects/mailo.html'
+    stats = Stat.objects.get(donater=request.user)
+    form = LinkForm(
+        request.POST or None,
+        files=request.FILES or None
+    )
+    INC_API = 1
+    if form.is_valid():
+        #code = form.cleaned_data['code']
+        link = form.cleaned_data['link']
+        count_link = form.cleaned_data['count_link']
+        #form.save()
+        body_header = (
+            '<html>' +
+            f'<body>{request.user}, здравствуйте!<br />'
+        )
+        body_footer = ''
+        for i in range(1, count_link+1):
+            body_footer += f'<a href="{link}">список {i}</a><br />'
+        body_footer += ('</body>' +
+                        '</html>')
+        body = body_header + body_footer
+        if stats.balance <= 0:
+            return render(request, template, {'form': form,
+                                              'balance': stats.balance})
+        
+        url_send = "https://api.mailopost.ru/v1/email/messages"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {}".format(API_KEY_MAILO[INC_API])
+        }
+        data = {
+            "from_email": "nadolirender@gmail.com",
+            "to": "nadolirender@gmail.com",
+            "subject": "Test",
+            "html": body,
+            "payment": "subscriber",
+        }
+        res = requests.post(url=url_send, headers=headers, data=json.dumps(data))
+        # stats.count_unisender += 1
+        # stats.save()
+        return redirect('redirects:mailos_result')
+    return render(request, template, {'form': form,
+                                      'balance': stats.balance})
+
+
+
+def user_get_result_mailo(request):
+    ''' Личный кабинет пользователя.
+        Для получения редиректов. '''
+    template = 'redirects/mailo_result.html'
+    title = 'Личный кабинет.'
+    response = ''
+    links = quickstart.main(SEND_EMAIL[1])
+    for link in links:
+        response += f'{link} \n'
+    context = {
+        'title': title,
+        'page_obj': response,
+    }
+    return render(request, template, context)
+
+
 def user_get_stats(request):
     ''' Личный кабинет пользователя.
         Для получения статистики. '''
@@ -214,7 +283,7 @@ class FeedbackThanks(TemplateView):
 
 
 def check_email(request):
-    ''' Страница создания отзыва. '''
+    ''' Страница для проверки emails на существование. '''
     template = 'redirects/check_email.html'
     form = CheckEmailForm(
         request.POST or None,
@@ -234,3 +303,24 @@ def check_email(request):
                                           'emails_False': emails_False})
     return render(request, template, {'form': form})
     
+
+def ghunt_email(request):
+    ''' Страница для проверки emails через ghunt. '''
+    template = 'redirects/ghunt.html'
+    form = CheckEmailForm(
+        request.POST or None,
+        files=request.FILES or None
+    )
+    if form.is_valid():
+        post = form.cleaned_data['emails']
+        emails = post.split('\r\n')
+        emails_True, emails_False = '', ''
+        for email in emails:
+            if checker_ghunt(email):
+                emails_True += f'{email}\n'
+            else:
+                emails_False += f'{email}\n'
+        return render(request, template, {'form': form,
+                                          'emails_True': emails_True,
+                                          'emails_False': emails_False})
+    return render(request, template, {'form': form})

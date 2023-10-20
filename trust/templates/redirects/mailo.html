@@ -10,11 +10,11 @@
     <div class="col-md-8 p-5">
       <div class="card text-bg-success mb-3">
     
-        <div class="card-header">Личный кабинет unisender: {{ user.username }}</div><br>
+        <div class="card-header">Личный кабинет mailo: {{ user.username }}</div><br>
           <div class="card-body">
             <h5 class="card-title">Ваш баланс: {{ balance|floatformat:2 }} usd</h5>
             <form method="POST" enctype="multipart/form-data" 
-              action="{% url 'redirects:unisenders' %}">
+              action="{% url 'redirects:mailos' %}">
               {% csrf_token %}          
               <div class="form-group row my-3 p-3" style="font-size: 22px;">
                 {{ form }}
