@@ -23,6 +23,7 @@ API_KEY_UNISOFT = {1: os.getenv('API_KEY_UNISOFT'),
                    5: os.getenv('API_KEY_UNISOFT_5'),
                    6: os.getenv('API_KEY_UNISOFT_6'),}
 API_KEY_MAILO = {1: os.getenv('API_KEY_MAILOPOST'),}
+API_KEY_SELZY = {1: os.getenv('API_KEY_SELZY'),}
 SEND_EMAIL = {1: os.getenv('SENDER_EMAIL'),
               2: os.getenv('SENDER_EMAIL_2'),
               3: os.getenv('SENDER_EMAIL_3'),
@@ -214,7 +215,6 @@ def user_get_link_mailo(request):
                                       'balance': stats.balance})
 
 
-
 def user_get_result_mailo(request):
     ''' Личный кабинет пользователя.
         Для получения редиректов. '''
@@ -222,6 +222,72 @@ def user_get_result_mailo(request):
     title = 'Личный кабинет.'
     response = ''
     links = quickstart.main(SEND_EMAIL[1])
+    for link in links:
+        response += f'{link} \n'
+    context = {
+        'title': title,
+        'page_obj': response,
+    }
+    return render(request, template, context)
+
+
+@login_required
+def user_get_link_selzy(request):
+    ''' Личный кабинет selzy.
+        Заполняет поля кода, ссылки и число. '''
+    template = 'redirects/selzy.html'
+    stats = Stat.objects.get(donater=request.user)
+    form = LinkForm(
+        request.POST or None,
+        files=request.FILES or None
+    )
+    INC_API = 1
+    INC_EMAIL = 1
+    if form.is_valid():
+        #code = form.cleaned_data['code']
+        link = form.cleaned_data['link']
+        count_link = form.cleaned_data['count_link']
+        #form.save()
+        body_header = (
+            '<html>' +
+            f'<body>{request.user}, здравствуйте!<br />'
+        )
+        body_footer = ''
+        for i in range(1, count_link+1):
+            body_footer += f'<a href="{link}">список {i}</a><br />'
+        body_footer += ('</body>' +
+                        '</html>')
+        body = body_header + body_footer
+        if stats.balance <= 0:
+            return render(request, template, {'form': form,
+                                              'balance': stats.balance})
+        
+        url_send = (f'https://api.selzy.com/ru/api/sendEmail?format=json&' +
+                    f'api_key={API_KEY_SELZY[INC_API]}&' +
+                    f'email={SEND_EMAIL[INC_EMAIL]}&' +
+                    f'sender_name=SELZY&' +
+                    f'sender_email={SEND_EMAIL[INC_API]}&' +
+                    f'subject=TRY_RED&' +
+                    f'body={body}&' +
+                    f'list_id=1&' +
+                    f'track_read=0&' +
+                    f'track_links=1&' +
+                    f'error_checking=1&')
+        requests.get(url_send)
+        # stats.count_unisender += 1
+        # stats.save()
+        return redirect('redirects:selzys_result')
+    return render(request, template, {'form': form,
+                                      'balance': stats.balance})
+
+
+def user_get_result_selzy(request):
+    ''' Личный кабинет пользователя.
+        Для получения редиректов. '''
+    template = 'redirects/selzy_result.html'
+    title = 'Личный кабинет.'
+    response = ''
+    links = quickstart.main(1)
     for link in links:
         response += f'{link} \n'
     context = {
