@@ -241,41 +241,68 @@ def user_get_link_selzy(request):
         request.POST or None,
         files=request.FILES or None
     )
-    INC_API = 1
-    INC_EMAIL = 1
     if form.is_valid():
         #code = form.cleaned_data['code']
         link = form.cleaned_data['link']
         count_link = form.cleaned_data['count_link']
         #form.save()
+        if stats.balance <= 0:
+            return render(request, template, {'form': form,
+                                              'balance': stats.balance})
         body_header = (
             '<html>' +
             f'<body>{request.user}, здравствуйте!<br />'
         )
-        body_footer = ''
-        for i in range(1, count_link+1):
-            body_footer += f'<a href="{link}">список {i}</a><br />'
-        body_footer += ('</body>' +
-                        '</html>')
-        body = body_header + body_footer
-        if stats.balance <= 0:
-            return render(request, template, {'form': form,
-                                              'balance': stats.balance})
-        
-        url_send = (f'https://api.selzy.com/ru/api/sendEmail?format=json&' +
-                    f'api_key={API_KEY_SELZY[INC_API]}&' +
-                    f'email={SEND_EMAIL[INC_EMAIL]}&' +
-                    f'sender_name=SELZY&' +
-                    f'sender_email={SEND_EMAIL[INC_API]}&' +
-                    f'subject=TRY_RED&' +
-                    f'body={body}&' +
-                    f'list_id=1&' +
-                    f'track_read=0&' +
-                    f'track_links=1&' +
-                    f'error_checking=1&')
-        requests.get(url_send)
-        # stats.count_unisender += 1
-        # stats.save()
+        global INC_EMAIL
+        global INC_API
+        INC_EMAIL = 1
+        INC_API = 1
+        while count_link > LIMIT_LINK:
+            count_link -= LIMIT_LINK
+            body_footer = ''
+            for i in range(1, LIMIT_LINK+1):
+                body_footer += f'<a href="{link}">список {i}</a><br />'
+            body_footer += ('</body>' +
+                            '</html>')
+            body = body_header + body_footer
+            url_send = (f'https://api.selzy.com/ru/api/sendEmail?format=json&' +
+                        f'api_key={API_KEY_SELZY[INC_API]}&' +
+                        f'email={SEND_EMAIL[INC_EMAIL]}&' +
+                        f'sender_name=SELZY&' +
+                        f'sender_email={SEND_EMAIL[INC_API]}&' +
+                        f'subject=TRY_RED&' +
+                        f'body={body}&' +
+                        f'list_id=1&' +
+                        f'track_read=0&' +
+                        f'track_links=1&' +
+                        f'error_checking=1&')
+            requests.get(url_send)
+            INC_EMAIL += 1
+            if INC_EMAIL > 7:
+                INC_EMAIL = 1
+                INC_API += 1
+            
+        if count_link <= LIMIT_LINK:
+            body_footer = ''
+            for i in range(1, count_link+1):
+                body_footer += f'<a href="{link}">список {i}</a><br />'
+            body_footer += ('</body>' +
+                            '</html>')
+            body = body_header + body_footer
+            url_send = (f'https://api.selzy.com/ru/api/sendEmail?format=json&' +
+                        f'api_key={API_KEY_SELZY[INC_API]}&' +
+                        f'email={SEND_EMAIL[INC_EMAIL]}&' +
+                        f'sender_name=SELZY&' +
+                        f'sender_email={SEND_EMAIL[INC_API]}&' +
+                        f'subject=TRY_RED&' +
+                        f'body={body}&' +
+                        f'list_id=1&' +
+                        f'track_read=0&' +
+                        f'track_links=1&' +
+                        f'error_checking=1&')
+            requests.get(url_send)
+        stats.count_unisender += 1
+        stats.save()
         return redirect('redirects:selzys_result')
     return render(request, template, {'form': form,
                                       'balance': stats.balance})
@@ -287,9 +314,16 @@ def user_get_result_selzy(request):
     template = 'redirects/selzy_result.html'
     title = 'Личный кабинет.'
     response = ''
-    links = quickstart.main(1)
-    for link in links:
-        response += f'{link} \n'
+    if INC_API > 1:
+        for inc_main in range(1, 8):
+            links = quickstart.main(inc_main)
+            for link in links:
+                response += f'{link} \n'
+    else:
+        for inc_main in range(1, INC_EMAIL+1):
+            links = quickstart.main(inc_main)
+            for link in links:
+                response += f'{link} \n'
     context = {
         'title': title,
         'page_obj': response,
