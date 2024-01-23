@@ -59,6 +59,21 @@ cover/
 *.log
 local_settings.py
 db.sqlite3
+credentials_1.json
+credentials_2.json
+credentials_3.json
+credentials_4.json
+credentials_5.json
+credentials_6.json
+credentials_7.json
+token_1.json
+token_2.json
+token_3.json
+token_4.json
+token_5.json
+token_6.json
+token_7.json
+token.json
 db.sqlite3-journal
 
 # Flask stuff:
